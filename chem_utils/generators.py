@@ -7,36 +7,40 @@ from pydantic import validate_arguments
 
 
 @validate_arguments
-def generate_moles_with_functional_tail(
+def generate_molecule_by_carbon_length(
     major_length: int,
+    chemistry: Literal["alkane", "func", "aldehyde", "carboxylic acid"] = "alkane",
     branch_locations: List[int] = [],
-    branch_identies: List[str] = [],
-    suffix: Literal["ane", "yl", "anal", "ol"] = "ane",
-    validate=True,
+    branch_identities: List[str] = [],
+    validate_molecule=True,
 ):
+
+    suffix_dict = {"alkane": "ane", "func": "yl", "aldehyde": "anal", "carboxylic acid": "anoic acid"}
+
+    suffix = suffix_dict[chemistry]
     name = ""
 
-    if len(branch_locations) != len(branch_identies):
-        raise ValueError("len(branch_locations) != len(branch_identies)")
+    if len(branch_locations) != len(branch_identities):
+        raise ValueError("len(branch_locations) != len(branch_identities)")
 
-    for ind, branch in enumerate(branch_identies):
+    for ind, branch in enumerate(branch_identities):
         branch_location = branch_locations[ind]
         name = glue_blocks(name, f"{branch_location}-{branch} ")
 
     if major_length == 1:
-        return "methane"
+        return "meth" + suffix
     if major_length == 2:
-        return "ethane"
+        return "eth" + suffix
     if major_length == 3:
-        prefix = "propane"
+        prefix = "prop" + suffix
     if major_length == 4:
-        prefix = "butane"
+        prefix = "but" + suffix
     if major_length >= 5:
         prefix = glue_blocks(generate_prefix(major_length)[:-1], suffix)
 
     name = glue_blocks(name, prefix)
 
-    if validate:
+    if validate_molecule:
         if cirpy.resolve(name, "smiles"):
             return name
     else:
