@@ -4,6 +4,7 @@ import cirpy
 from typing import List, Literal
 from chem_utils.utils import glue_blocks, generate_prefix
 from pydantic import validate_arguments
+from collections import defaultdict
 
 
 @validate_arguments
@@ -29,13 +30,13 @@ def generate_molecule_by_carbon_length(
 
     if major_length == 1:
         return "meth" + suffix
-    if major_length == 2:
+    elif major_length == 2:
         return "eth" + suffix
-    if major_length == 3:
+    elif major_length == 3:
         prefix = "prop" + suffix
-    if major_length == 4:
+    elif major_length == 4:
         prefix = "but" + suffix
-    if major_length >= 5:
+    else:
         prefix = glue_blocks(generate_prefix(major_length)[:-1], suffix)
 
     name = glue_blocks(name, prefix)
